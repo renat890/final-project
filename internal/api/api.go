@@ -5,17 +5,19 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"tracker/internal/config"
 )
 
 var (
 	ErrMethodNotAllowed = errors.New("для данного обработчика выбран неправильный метод")
 )
 
-func Init() {
+func Init(conf *config.Config) {
     http.HandleFunc("/api/nextdate", nextDayHandler)
-	http.HandleFunc("/api/task", taskHandler)
-	http.HandleFunc("/api/tasks", tasksHandler)
-	http.HandleFunc("/api/task/done", doneTaskHandler)
+	http.HandleFunc("/api/task", authMiddleware(taskHandler, conf))
+	http.HandleFunc("/api/tasks", authMiddleware(tasksHandler, conf))
+	http.HandleFunc("/api/task/done", authMiddleware(doneTaskHandler, conf))
+	http.HandleFunc("/api/signin", makeHandleAuth(conf))
 }
 
 func nextDayHandler(w http.ResponseWriter, r *http.Request) {
@@ -50,8 +52,6 @@ func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, ErrMethodNotAllowed.Error(), http.StatusMethodNotAllowed)
 	}
 }
-
-
 
 func taskHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {

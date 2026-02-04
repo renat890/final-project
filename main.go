@@ -20,7 +20,7 @@ func main() {
 
 	http.Handle("/", http.FileServer(http.Dir(webDir)))
 
-	api.Init()
+	api.Init(conf)
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", conf.TodoPort), http.DefaultServeMux); err != nil {
 		log.Fatal(err)
