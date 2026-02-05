@@ -1,0 +1,12 @@
+services:
+  todo:
+    build:
+      context: .
+      args:
+        - TODO_PORT=${TODO_PORT}
+    env_file:
+      - .env
+    volumes:
+      - ./scheduler.db:/scheduler.db
+    ports:
+      - "${TODO_PORT}:${TODO_PORT}"
