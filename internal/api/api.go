@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 	"tracker/internal/config"
+	"tracker/internal/constants"
 )
 
 var (
@@ -33,7 +34,7 @@ func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		nowT, err := time.Parse(FORMAT, now)
+		nowT, err := time.Parse(constants.TimeFormat, now)
 		if err != nil {
 			http.Error(w, fmt.Errorf("не могу распарсить now, ошибка: %w", err).Error(), http.StatusBadRequest)
 			return

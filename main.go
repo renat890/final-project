@@ -17,6 +17,7 @@ func main() {
 	if err := db.Init(conf.TodoDBFile); err != nil {
 		log.Fatalf("ошибка инициализировать БД: %v", err)
 	}
+	defer db.Close()
 
 	http.Handle("/", http.FileServer(http.Dir(webDir)))
 

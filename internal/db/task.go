@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"tracker/internal/constants"
 )
 
 type Task struct {
@@ -38,14 +39,14 @@ func Tasks(limit int, search string) ([]*Task, error) {
         err error
     )
     
-    query := "SELECT * FROM scheduler LIMIT $1"
+    query := "SELECT id,date,title,comment,repeat FROM scheduler LIMIT $1"
     if search != "" {
         value, isDate := checkSearch(search)
         if !isDate {
             value = "%" + value + "%"
-            query = "SELECT * FROM scheduler WHERE title LIKE $2 OR comment LIKE $2 ORDER BY date LIMIT $1"
+            query = "SELECT date,title,comment,repeat FROM scheduler WHERE title LIKE $2 OR comment LIKE $2 ORDER BY date LIMIT $1"
         } else {
-            query = "SELECT * FROM scheduler WHERE date = $2 LIMIT $1"
+            query = "SELECT date,title,comment,repeat FROM scheduler WHERE date = $2 LIMIT $1"
         }
         res, err = db.Query(query, limit, value)
     } else {
@@ -66,14 +67,18 @@ func Tasks(limit int, search string) ([]*Task, error) {
         result = append(result, &task)
     }
 
+    if res.Err() != nil {
+        return nil, ErrReadResult
+    }
+
     return result, nil
 }
 
 // true - значит поиск по дате должен быть
 func checkSearch(search string) (string, bool) {
-    date, err := time.Parse("02.01.2006", search)
+    date, err := time.Parse(constants.TimeParsePattern, search)
     if err == nil {
-        return date.Format("20060102"), true
+        return date.Format(constants.TimeFormat), true
     }
     return search, false
 }

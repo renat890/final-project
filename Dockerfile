@@ -10,5 +10,5 @@ ARG TODO_PORT
 WORKDIR /
 COPY --from=build /todo-app /todo-app
 COPY web ./web
-EXPOSE 8080
+EXPOSE ${TODO_PORT}
 ENTRYPOINT [ "/todo-app" ]

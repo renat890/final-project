@@ -6,9 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"tracker/internal/constants"
 )
-
-const FORMAT = "20060102"
 
 var (
 	ErrInvalidMonthParam = errors.New("невалидное значение для дня месяца")
@@ -111,7 +110,7 @@ func genDaysArr(daysOfMonth []string, date time.Time) ([32]bool, error) {
 
 func NextDate(now time.Time, dstart, repeat string) (string, error) {
 	// парсинг исходной даты
-	date, err := time.Parse(FORMAT, dstart)
+	date, err := time.Parse(constants.TimeFormat, dstart)
 	if err != nil {
 		return "", fmt.Errorf("ошибка парсинга dstart: %w", err)
 	}
@@ -205,7 +204,7 @@ func NextDate(now time.Time, dstart, repeat string) (string, error) {
 	}
 
 	// Финальное пробразование даты в строку
-	return date.Format(FORMAT), nil
+	return date.Format(constants.TimeFormat), nil
 }
 
 // специфичная  функция для определения последнего и предпоследнего дня в месяце

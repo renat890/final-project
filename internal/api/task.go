@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
+	"tracker/internal/constants"
 	"tracker/internal/db"
 )
 
@@ -187,17 +189,20 @@ func writeResponse(w http.ResponseWriter, typeR string, value string, status int
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(status)
-	w.Write(body)
+	_, err := w.Write(body)
+	if err != nil {
+		log.Printf("не удалось записать ответ: %s", err.Error())
+	}
 }
 
 func checkDate(task *db.Task) error {
 	now := time.Now()
 
 	if task.Date == "" {
-		task.Date = now.Format(FORMAT)
+		task.Date = now.Format(constants.TimeFormat)
 	}
 
-	t, err := time.Parse("20060102", task.Date)
+	t, err := time.Parse(constants.TimeFormat, task.Date)
 	if err != nil {
 		return fmt.Errorf("не могу распарсить время: %w", err)
 	}
@@ -214,7 +219,7 @@ func checkDate(task *db.Task) error {
     if afterNow(now, t) {
         if len(task.Repeat) == 0 {
             // если правила повторения нет, то берём сегодняшнее число
-            task.Date = now.Format("20060102")
+            task.Date = now.Format(constants.TimeFormat)
         } else {
             // в противном случае, берём вычисленную ранее следующую дату
             task.Date = next
